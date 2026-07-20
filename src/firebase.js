@@ -1,16 +1,13 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc } from 'firebase/firestore';
 
-// TODO: replace with Tommy's own Firebase project config before deploying
-// (see SETUP.md) — do NOT reuse Nick's project, or this app will read/write
-// his live production data.
 const firebaseConfig = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME.firebaseapp.com",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME.firebasestorage.app",
-  messagingSenderId: "REPLACE_ME",
-  appId: "REPLACE_ME",
+  apiKey: "AIzaSyDL7Uqc609fzVh5vsc4wyzgBdOWIFQU6co",
+  authDomain: "tommy-s-crm.firebaseapp.com",
+  projectId: "tommy-s-crm",
+  storageBucket: "tommy-s-crm.firebasestorage.app",
+  messagingSenderId: "1013085981597",
+  appId: "1:1013085981597:web:3b51e5201f4faeb4e5bd74",
 };
 
 const app = initializeApp(firebaseConfig);
