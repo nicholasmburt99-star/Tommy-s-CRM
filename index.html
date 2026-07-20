@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Property & Commercial Insurance CRM</title>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+
+<div class="header">
+  <div class="brand"><h1>🏢 Property & Commercial Insurance CRM</h1><p>Referral & Prospect Pipeline</p></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="exportCSV()">📥 Export CSV</button>
+    <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="exportJSON()" title="Full backup — includes notes & activity">💾 Backup JSON</button>
+    <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="document.getElementById('jsonFileInput').click()" title="Restore leads from a JSON backup">📂 Restore JSON</button>
+    <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="parseJSONFile(this)">
+    <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="openImport()">📥 Bulk Import</button>
+    <button class="btn-add" onclick="openAdd()">+ Add Lead</button>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-kanban" onclick="switchTab('kanban')">🗂 Kanban</button>
+  <button class="tab-btn" id="tab-overview" onclick="switchTab('overview')">📊 Overview</button>
+  <button class="tab-btn" id="tab-okr" onclick="switchTab('okr')">🎯 OKRs</button>
+  <button class="tab-btn" id="tab-network" onclick="switchTab('network')">🤝 Networking <span id="nw-badge" style="display:none;background:#ef4444;color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px"></span></button>
+  <button class="tab-btn" id="tab-tasks" onclick="switchTab('tasks')">✅ Tasks <span id="tt-badge" style="display:none;background:#ef4444;color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px"></span></button>
+  <button class="tab-btn" id="tab-daily" onclick="switchTab('daily')">📝 Daily Notes</button>
+</div>
+
+<div class="main" id="view-leads" style="display:none">
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="Search leads…" oninput="onSearch(this.value)">
+      </div>
+      <div class="filter-row">
+        <button class="fbtn active" onclick="setF('due',this)">Due</button>
+        <button class="fbtn" onclick="setF('quoting',this)">Quoting</button>
+        <button class="fbtn" onclick="setF('bound',this)">Bound</button>
+      </div>
+    </div>
+    <div class="leads-list" id="leadsList"></div>
+  </div>
+  <div class="detail" id="detail">
+    <div class="no-sel"><div class="ni">👥</div><h2>Select a lead</h2><p>or click + Add Lead to get started</p></div>
+  </div>
+</div>
+
+<div id="view-kanban" style="display:flex;flex:1;overflow:hidden;">
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+    <div class="overview-inner" id="kanbanInner">
+      <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading board…</div>
+    </div>
+  </div>
+  <div class="detail" id="kanban-detail">
+    <div class="no-sel"><div class="ni">👥</div><h2>Select a lead</h2><p>Click a card to view details</p></div>
+  </div>
+</div>
+
+<div id="view-overview" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="overview-inner" id="overviewInner">
+    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading overview…</div>
+  </div>
+</div>
+
+
+<div id="view-queue" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="queue-wrap" id="queueInner"></div>
+</div>
+
+<div id="view-okr" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="overview-inner" id="okrInner">
+    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading OKRs...</div>
+  </div>
+</div>
+
+<div id="view-tasks" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+  <div class="overview-inner" id="tasksInner">
+    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading tasks…</div>
+  </div>
+</div>
+
+<div id="view-daily" style="display:none;flex:1;overflow:auto;flex-direction:column;">
+  <div class="overview-inner" id="dailyInner">
+    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading daily routine…</div>
+  </div>
+</div>
+
+<div class="overlay" id="callDebriefModal" style="display:none" onclick="if(event.target===this)skipCallDebrief()"></div>
+
+
+<div id="view-network" style="display:none;flex:1;overflow:hidden;">
+  <div style="flex:1;overflow-y:auto;background:white" id="networkTable"></div>
+  <div class="detail" id="network-detail">
+    <div class="no-sel"><div class="ni">🤝</div><h2>Select a partner</h2><p>Click a row to view details</p></div>
+  </div>
+</div>
+
+<div class="overlay" id="partnerModal" style="display:none" onclick="if(event.target===this)closePartnerModal()">
+  <div class="modal" style="width:520px">
+    <h2 id="pmTitle">🤝 Add Partner</h2>
+    <div class="frow">
+      <div class="fg"><label>Name *</label><input id="np-name" placeholder="Contact name"></div>
+      <div class="fg"><label>Title</label><input id="np-title" placeholder="e.g. Senior Partner, VP Sales"></div>
+    </div>
+    <div class="fg"><label>Company</label><input id="np-company" placeholder="Company name"></div>
+    <div class="frow">
+      <div class="fg"><label>Phone</label><input id="np-phone" placeholder="(555) 123-4567" type="tel"></div>
+      <div class="fg"><label>Email</label><input id="np-email" placeholder="email@example.com" type="email"></div>
+    </div>
+    <div class="fg"><label>Category</label>
+      <select id="np-category" style="width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;font-family:inherit;outline:none;background:white;color:#1e293b">
+        <option value="">-- Select --</option>
+        <option value="agent">Agent / Broker</option>
+        <option value="cpa">CPA</option>
+        <option value="attorney">Attorney</option>
+        <option value="financial_advisor">Financial Advisor</option>
+        <option value="hr_consultant">Realtor / Real Estate</option>
+        <option value="carrier">Carrier</option>
+        <option value="tpa">Claims Adjuster</option>
+        <option value="payroll">Mortgage Lender</option>
+        <option value="retirement_401k">Property Manager</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="fg"><label>Specialty / Niche</label><input id="np-specialty" placeholder="e.g. Small group, Medicare, Construction"></div>
+    <div class="fg"><label>How You Met</label><input id="np-howmet" placeholder="BNI, conference, carrier event..."></div>
+    <div class="frow">
+      <div class="fg"><label>Geographic Overlap</label><input id="np-geo" placeholder="Central Valley, Bay Area..."></div>
+      <div class="fg"><label>Mutual Clients</label><input id="np-mutual" placeholder="Shared clients or referrals"></div>
+    </div>
+    <div class="fg"><label>Notes</label><textarea id="np-notes" style="height:55px;resize:none" placeholder="Anything notable..."></textarea></div>
+    <div class="m-actions">
+      <button class="btn bg" onclick="closePartnerModal()">Cancel</button>
+      <button class="btn bp" id="pmSave" onclick="addPartner()">Add Partner</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2 id="mtitle">➕ Add New Lead</h2>
+    <div class="frow">
+      <div class="fg"><label>First Name *</label><input id="fF" placeholder="John"></div>
+      <div class="fg"><label>Last Name *</label><input id="fL" placeholder="Smith"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Phone *</label><input id="fP" placeholder="(555) 123-4567" type="tel"></div>
+      <div class="fg"><label>Email</label><input id="fE" placeholder="john@email.com" type="email"></div>
+    </div>
+    <div class="fg"><label>Company / Business Name</label><input id="fCo" placeholder="Acme Dental"></div>
+    <div class="fg"><label>Address</label><input id="fAddr" placeholder="123 Main St, Modesto, CA 95350"></div>
+    <div class="fg"><label>Secretary of State Status</label>
+      <select id="fSOS" style="width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;font-family:inherit;outline:none;background:white;color:#1e293b">
+        <option value="">— Select —</option>
+        <option value="active">Active / In Good Standing</option>
+        <option value="suspended">Suspended</option>
+        <option value="forfeited">Forfeited</option>
+        <option value="dissolved">Dissolved</option>
+        <option value="not_found">Not Found</option>
+        <option value="not_checked">Not Checked Yet</option>
+      </select>
+    </div>
+    <div class="fg"><label>Business Website</label><input id="fWeb" placeholder="https://acmedental.com" type="url"></div>
+    <div class="fg"><label>Industry</label><input id="fInd" placeholder="Dental, Restaurant, Construction…"></div>
+    <div class="frow">
+      <div class="fg"><label>Decision Maker</label><input id="fDM" placeholder="Jane Smith — HR Director"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label># Employees</label><input id="fEmp" placeholder="12" type="number"></div>
+      <div class="fg"><label>Lead Date</label><input id="fLD" type="date"></div>
+    </div>
+    <div class="fg"><label>Lead Source</label>
+      <select id="fSrc" style="width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;font-family:inherit;outline:none;background:white;color:#1e293b">
+        <option value="">— Select source —</option>
+        <option value="Referral">Referral</option>
+        <option value="BNI">BNI</option>
+        <option value="Online">Online</option>
+        <option value="Carrier Rep">Carrier Rep</option>
+        <option value="Cold Call">Cold Call</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="fg"><label>Referred By</label><input id="fRef" placeholder="John at BNI, carrier rep, etc."></div>
+    <div class="fg"><label>Policy Type</label><input id="fPolicyType" placeholder="e.g. Home, Auto, Umbrella, Commercial Package, GL, Workers Comp"></div>
+    <div class="fg"><label>Current Carrier</label><input id="fCarrier" placeholder="e.g. Travelers, State Farm, Nationwide"></div>
+    <div class="fg"><label>Renewal Date</label><input id="fRenew" type="date"></div>
+    <div class="fg"><label>Initial Notes</label><textarea id="fN" style="height:55px;resize:none" placeholder="Anything notable…"></textarea></div>
+    <div class="m-actions">
+      <button class="btn bg" onclick="closeModal()">Cancel</button>
+      <button class="btn bp" id="mSave" onclick="saveLead()">Add Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Import Modal -->
+<div class="overlay" id="importModal" style="display:none" onclick="if(event.target===this)closeImport()">
+  <div class="import-modal">
+    <h2>📥 Bulk Import Leads</h2>
+    <p class="sub">Paste from Excel or Google Sheets — or type leads directly into the table below.</p>
+
+    <div class="paste-zone">
+      <div class="paste-label">
+        <span>📁 Upload CSV File</span>
+        <label class="btn bg parse-btn" style="cursor:pointer">
+          Choose CSV…
+          <input type="file" accept=".csv" style="display:none" onchange="parseCSVFile(this)">
+        </label>
+      </div>
+      <div class="import-hint" style="margin-bottom:10px">Upload the CSV you exported from this CRM — all fields (email, city, stage, carrier, etc.) will be restored automatically.</div>
+      <div class="paste-label" style="margin-top:8px">
+        <span>📋 Or Paste from Excel / Google Sheets</span>
+        <button class="btn bg parse-btn" onclick="parsePaste()">Parse & Fill Table →</button>
+      </div>
+      <textarea class="paste-textarea" id="pasteArea" placeholder="Copy cells from Excel or Google Sheets and paste here, then click Parse. Columns expected: First Name, Last Name, Phone, Company, Industry, State, Employees, Lead Date"></textarea>
+      <div class="import-hint">Tip: Select rows in Excel or Google Sheets → Copy → Paste here. Column order: First Name, Last Name, Phone, Company, Industry, State, # Employees, Lead Date (optional header row is fine)</div>
+    </div>
+
+    <div class="import-divider"><hr><span>OR TYPE DIRECTLY</span><hr></div>
+
+    <div class="itbl-wrap">
+      <table class="itbl" id="importTable">
+        <thead>
+          <tr>
+            <th class="req">First</th>
+            <th class="req">Last</th>
+            <th class="req">Phone</th>
+            <th>Company</th>
+            <th>Industry</th>
+            <th>State</th>
+            <th>Employees</th>
+            <th>Lead Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="importBody"></tbody>
+      </table>
+    </div>
+
+    <div style="margin-bottom:10px">
+      <button class="btn bg" onclick="addImportRow()" style="font-size:11px;padding:5px 11px">+ Add Row</button>
+    </div>
+
+    <div class="import-footer">
+      <div class="import-count" id="importCount">0 leads ready to import</div>
+      <button class="btn bg" onclick="closeImport()">Cancel</button>
+      <button class="btn bp" id="importBtn" onclick="doImport()">📥 Import Leads</button>
+    </div>
+    <div class="import-error" id="importError"></div>
+  </div>
+</div>
+
+  </body>
+</html>
