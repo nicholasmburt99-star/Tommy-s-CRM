@@ -257,48 +257,6 @@ export function openImport() {
   document.getElementById('importModal').style.display = 'flex';
 }
 export function closeImport() { document.getElementById('importModal').style.display = 'none'; }
-export function exportJSON() {
-  const data = JSON.stringify(state.leads, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const link = document.createElement('a');
-  const dateStr = new Date().toISOString().split('T')[0];
-  link.href = URL.createObjectURL(blob);
-  link.download = `leads-backup-${dateStr}.json`;
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  showToast('💾 JSON backup exported!');
-}
-export function parseJSONFile(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    let parsed;
-    try {
-      parsed = JSON.parse(e.target.result);
-    } catch {
-      alert('Invalid JSON file — could not parse.');
-      return;
-    }
-    if (!Array.isArray(parsed) || !parsed.length || !parsed[0].firstName) {
-      alert('Invalid backup file — expected an array of leads.');
-      return;
-    }
-    if (!confirm(`This will add ${parsed.length} lead${parsed.length !== 1 ? 's' : ''} to your existing data. Continue?`)) return;
-    parsed.forEach(l => state.leads.unshift(l));
-    save();
-    renderList();
-    if (parsed.length > 0) {
-      state.selId = parsed[0].id;
-      renderDetail();
-    }
-    showToast(`✅ ${parsed.length} lead${parsed.length !== 1 ? 's' : ''} restored from backup!`);
-    input.value = '';
-  };
-  reader.readAsText(file);
-}
 export function exportCSV() {
   const headers = ['First Name', 'Last Name', 'Phone', 'Email', 'Company', 'City', 'State', 'Website', 'Industry', 'Employees', 'Lead Source', 'Referred By', 'Decision Maker', 'Carrier', 'Policy Type', 'Renewal Date', 'Lead Date', 'Stage', 'Next Follow-Up', 'Created At'];
 

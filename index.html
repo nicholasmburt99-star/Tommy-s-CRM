@@ -12,9 +12,6 @@
   <div class="brand"><h1>🏢 Property & Commercial Insurance CRM</h1><p>Referral & Prospect Pipeline</p></div>
   <div style="display:flex;gap:8px">
     <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="exportCSV()">📥 Export CSV</button>
-    <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="exportJSON()" title="Full backup — includes notes & activity">💾 Backup JSON</button>
-    <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="document.getElementById('jsonFileInput').click()" title="Restore leads from a JSON backup">📂 Restore JSON</button>
-    <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="parseJSONFile(this)">
     <button class="btn-add" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)" onclick="openImport()">📥 Bulk Import</button>
     <button class="btn-add" onclick="openAdd()">+ Add Lead</button>
   </div>

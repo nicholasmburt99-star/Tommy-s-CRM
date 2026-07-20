@@ -15,7 +15,7 @@ import { renderLost } from './views/lost.js';
 import { selLead, onSearch, setF, moveS, jumpS, setFU, toggleCS, toggleObj, toggleScriptBody, toggleScriptCollapse, markLost, changeLostCategory } from './actions/pipeline.js';
 import { clearF, openAdd, openEdit, closeModal, saveLead, delLead, copyScript, addNote, deleteNote, startNoteEdit, saveNoteEdit, researchLead, saveResearchNote, dismissResearch, saveResearch, deleteResearch, saveLostReason, sendEmail } from './actions/leads.js';
 import { daysInStage, logCallOutcome, requestCallback } from './actions/callOutcomes.js';
-import { exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile } from './actions/importExport.js';
+import { exportCSV, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile } from './actions/importExport.js';
 import { switchTab, goToLead } from './tabs.js';
 import { setReContact, reengageLead } from './views/lost.js';
 import { kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd, kanbanDragOver, kanbanDragLeave, kanbanDrop } from './views/kanban.js';
@@ -36,7 +36,7 @@ Object.assign(window, {
   openAdd, openEdit, closeModal, saveLead, delLead, copyScript, sendEmail, addNote, deleteNote, startNoteEdit, saveNoteEdit,
   researchLead, saveResearchNote, dismissResearch, saveResearch, deleteResearch, saveLostReason,
   logCallOutcome, requestCallback,
-  exportCSV, exportJSON, parseJSONFile, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile,
+  exportCSV, openImport, closeImport, parsePaste, doImport, addImportRow, parseCSVFile,
   showToast,
   toggleCS, toggleObj, toggleScriptBody, toggleScriptCollapse,
   setReContact, reengageLead,
