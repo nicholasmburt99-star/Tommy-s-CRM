@@ -20,8 +20,6 @@
 <div class="tab-bar">
   <button class="tab-btn active" id="tab-kanban" onclick="switchTab('kanban')">🗂 Kanban</button>
   <button class="tab-btn" id="tab-overview" onclick="switchTab('overview')">📊 Overview</button>
-  <button class="tab-btn" id="tab-okr" onclick="switchTab('okr')">🎯 OKRs</button>
-  <button class="tab-btn" id="tab-network" onclick="switchTab('network')">🤝 Networking <span id="nw-badge" style="display:none;background:#ef4444;color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px"></span></button>
   <button class="tab-btn" id="tab-tasks" onclick="switchTab('tasks')">✅ Tasks <span id="tt-badge" style="display:none;background:#ef4444;color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px"></span></button>
   <button class="tab-btn" id="tab-daily" onclick="switchTab('daily')">📝 Daily Notes</button>
 </div>
@@ -68,12 +66,6 @@
   <div class="queue-wrap" id="queueInner"></div>
 </div>
 
-<div id="view-okr" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
-  <div class="overview-inner" id="okrInner">
-    <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading OKRs...</div>
-  </div>
-</div>
-
 <div id="view-tasks" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
   <div class="overview-inner" id="tasksInner">
     <div style="color:#94a3b8;font-size:12px;padding:30px;text-align:center">Loading tasks…</div>
@@ -87,55 +79,6 @@
 </div>
 
 <div class="overlay" id="callDebriefModal" style="display:none" onclick="if(event.target===this)skipCallDebrief()"></div>
-
-
-<div id="view-network" style="display:none;flex:1;overflow:hidden;">
-  <div style="flex:1;overflow-y:auto;background:white" id="networkTable"></div>
-  <div class="detail" id="network-detail">
-    <div class="no-sel"><div class="ni">🤝</div><h2>Select a partner</h2><p>Click a row to view details</p></div>
-  </div>
-</div>
-
-<div class="overlay" id="partnerModal" style="display:none" onclick="if(event.target===this)closePartnerModal()">
-  <div class="modal" style="width:520px">
-    <h2 id="pmTitle">🤝 Add Partner</h2>
-    <div class="frow">
-      <div class="fg"><label>Name *</label><input id="np-name" placeholder="Contact name"></div>
-      <div class="fg"><label>Title</label><input id="np-title" placeholder="e.g. Senior Partner, VP Sales"></div>
-    </div>
-    <div class="fg"><label>Company</label><input id="np-company" placeholder="Company name"></div>
-    <div class="frow">
-      <div class="fg"><label>Phone</label><input id="np-phone" placeholder="(555) 123-4567" type="tel"></div>
-      <div class="fg"><label>Email</label><input id="np-email" placeholder="email@example.com" type="email"></div>
-    </div>
-    <div class="fg"><label>Category</label>
-      <select id="np-category" style="width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;font-family:inherit;outline:none;background:white;color:#1e293b">
-        <option value="">-- Select --</option>
-        <option value="agent">Agent / Broker</option>
-        <option value="cpa">CPA</option>
-        <option value="attorney">Attorney</option>
-        <option value="financial_advisor">Financial Advisor</option>
-        <option value="hr_consultant">Realtor / Real Estate</option>
-        <option value="carrier">Carrier</option>
-        <option value="tpa">Claims Adjuster</option>
-        <option value="payroll">Mortgage Lender</option>
-        <option value="retirement_401k">Property Manager</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-    <div class="fg"><label>Specialty / Niche</label><input id="np-specialty" placeholder="e.g. Small group, Medicare, Construction"></div>
-    <div class="fg"><label>How You Met</label><input id="np-howmet" placeholder="BNI, conference, carrier event..."></div>
-    <div class="frow">
-      <div class="fg"><label>Geographic Overlap</label><input id="np-geo" placeholder="Central Valley, Bay Area..."></div>
-      <div class="fg"><label>Mutual Clients</label><input id="np-mutual" placeholder="Shared clients or referrals"></div>
-    </div>
-    <div class="fg"><label>Notes</label><textarea id="np-notes" style="height:55px;resize:none" placeholder="Anything notable..."></textarea></div>
-    <div class="m-actions">
-      <button class="btn bg" onclick="closePartnerModal()">Cancel</button>
-      <button class="btn bp" id="pmSave" onclick="addPartner()">Add Partner</button>
-    </div>
-  </div>
-</div>
 
 <div class="overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal">

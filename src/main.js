@@ -19,11 +19,7 @@ import { exportCSV, openImport, closeImport, parsePaste, doImport, addImportRow,
 import { switchTab, goToLead } from './tabs.js';
 import { setReContact, reengageLead } from './views/lost.js';
 import { kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd, kanbanDragOver, kanbanDragLeave, kanbanDrop } from './views/kanban.js';
-import { renderOKR, setOKRQuarter, prevOKRQuarter, nextOKRQuarter, toggleAddOKR, toggleAddKR, handleKRTypeChange } from './views/okr.js';
-import { addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateKRProgress, updateKRTitle, updateKRType, updateKRTarget } from './actions/okr.js';
 import { toggleLeadCall } from './actions/dailyCalls.js';
-import { renderNetwork, setNetworkFilter, getOverdueCount } from './views/network.js';
-import { addPartner, editPartner, deletePartner, logInteraction, deleteInteraction, setPartnerStrength, setPartnerNextOutreach, setPartnerNotes, selectPartner, openAddPartnerModal, openEditPartnerModal, closePartnerModal } from './actions/network.js';
 import { renderTasks } from './views/taskTracker.js';
 import { addTask, toggleTaskDone, deleteTask, startTaskEdit, saveTaskEdit, cancelTaskEdit, setTaskFilter } from './actions/taskTracker.js';
 import { renderDaily } from './views/dailyRoutine.js';
@@ -43,13 +39,7 @@ Object.assign(window, {
   getChecks, toggleTask,
   kanbanScrollStart, kanbanScrollStop, kanbanDragStart, kanbanDragEnd,
   kanbanDragOver, kanbanDragLeave, kanbanDrop,
-  renderOKR, setOKRQuarter, prevOKRQuarter, nextOKRQuarter, toggleAddOKR, toggleAddKR, handleKRTypeChange,
-  addOKR, deleteOKR, saveOKRTitle, addKeyResult, deleteKeyResult, updateKRProgress, updateKRTitle, updateKRType, updateKRTarget,
   toggleLeadCall,
-  renderNetwork, setNetworkFilter,
-  addPartner, editPartner, deletePartner, logInteraction, deleteInteraction,
-  setPartnerStrength, setPartnerNextOutreach, setPartnerNotes,
-  selectPartner, openAddPartnerModal, openEditPartnerModal, closePartnerModal,
   renderTasks, addTask, toggleTaskDone, deleteTask, startTaskEdit, saveTaskEdit, cancelTaskEdit, setTaskFilter,
   renderDaily, addDailyNote, deleteDailyNote,
   openCallDebrief, saveCallDebrief, skipCallDebrief,
@@ -74,11 +64,8 @@ document.addEventListener('keydown', e => {
 setOnSave(() => {
   if (state.activeTab === 'overview') renderOverview();
   if (state.activeTab === 'kanban') renderKanban();
-  if (state.activeTab === 'okr') renderOKR();
-  if (state.activeTab === 'network') renderNetwork();
   if (state.activeTab === 'tasks') renderTasks();
   if (state.activeTab === 'daily') renderDaily();
-  updateNetworkBadge();
   updateTasksBadge();
 });
 
@@ -92,23 +79,11 @@ function updateTasksBadge() {
   }
 }
 
-function updateNetworkBadge() {
-  const count = getOverdueCount();
-  const badge = document.getElementById('nw-badge');
-  if (badge) {
-    badge.textContent = count;
-    badge.style.display = count > 0 ? 'inline' : 'none';
-  }
-}
-
 switchTab('kanban');
 
 // Overdue toasts on app open
 setTimeout(() => {
-  updateNetworkBadge();
   updateTasksBadge();
-  const oc = getOverdueCount();
-  if (oc > 0) showToast(`🤝 ${oc} networking partner${oc > 1 ? 's' : ''} overdue for check-in`);
   const t = today();
   const lostDue = state.leads.filter(l => l.stageId === 'lost' && l.reContactDate && l.reContactDate <= t).length;
   if (lostDue > 0) showToast(`📋 ${lostDue} lost lead${lostDue > 1 ? 's' : ''} due for re-contact`);
@@ -133,14 +108,6 @@ onSnapshot(CRM_DOC, (snap) => {
   if (data.scripts) {
     state.scriptOverrides = JSON.parse(data.scripts);
     localStorage.setItem('bpcrm2_scripts', data.scripts);
-  }
-  if (data.okrs) {
-    state.okrs = JSON.parse(data.okrs);
-    localStorage.setItem('bpcrm2_okrs', data.okrs);
-  }
-  if (data.partners) {
-    state.partners = JSON.parse(data.partners);
-    localStorage.setItem('bpcrm2_partners', data.partners);
   }
   if (data.tasks) {
     state.tasks = JSON.parse(data.tasks);
